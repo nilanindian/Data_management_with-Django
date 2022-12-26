@@ -1,0 +1,162 @@
+1.open command prompt
+
+2.   pip install django
+     pip install djongo
+      django-admin  ( for test )
+
+3.  pip install dnspython
+	pip install pymongo=3.12 [ means pymongo need 3.12 or lower version ]
+
+4.Create a project any folder
+    open that directory in command prompt  then  run 
+    django-admin startproject  project_name
+
+5.create app 
+       cd  project_name
+      python manage.py startapp student
+     python manage.py runserver
+
+6-a.	open settings.py file
+    		register your app
+6-b.     create your database & collections in database software
+
+
+7.    change database settings
+
+8.   open models.py file then design your table ( remember mongod  server must be run  )
+
+	from django.db import models
+
+   	class  database_name ( models.Model ) :
+    		name=models.CharField ( max_length=30 )
+		age= models.IntegerField ( )
+		   
+
+   	then register your model or database  in admin.py 
+
+	from .models import  class_name/database-name/model_name
+	admin.site.register ( database_name  )
+
+
+9.   create     templates     folder inside the  base directrory ,
+           means the manage.py  &  'templates ' folder should be in same directory
+
+10.    then go to the settings.py file of  server   then
+             into the  templates DIRS ='[    ]'    <~   write 'templates'
+   
+11.  inside template folder create  page / html files   (  like  :  home.html,update.html  )   &  design your html file
+
+
+
+12.      copy urls.py file from project folder to app folder
+
+13.     open projects urls.py file   & write also     (  for register  app urls.py file   )
+
+       from django.urls import path,include
+
+                       urlpatterns = [
+                                 path('admin/', admin.site.urls),
+                               path('' "  , include("app_name.urls")),
+                         ]
+
+14. in app folder urls.py file write  your url paths   ( this file & views.py file should be in same directory  )
+         
+        from django.urls import path                 
+       from . import views
+                                    urlpatterns = [
+                                                     path('' ", views.function_name_1, name ),
+                                                   path('insert/', function_name_2),
+                                                 path('update/', function_name_n),
+                                      ]
+
+
+
+15.  open views .py file   & write the functions
+
+    from django.http import HttpResponse
+
+      example :    def home(req):
+                                           return render(req,"home.html")
+
+    example :  def home ( req ):
+          		return HttpResponse("hello")
+
+     example : def home(req):
+    		return HttpResponse(' <a href="https://www.google.com">google</a>' )
+
+
+
+16.   run this 2 command
+
+  python manage.py makemigrations
+  python manage.py migrate
+
+
+
+17.    create super  user  to access admin panel    :------------
+
+	run in control panel  :   python manage.py createsuperuser
+	then give credential  needed
+
+
+18. static file   : use it for  images, css, js  
+
+	1.  in settings.py file   :
+		STATIC_URL = '/static/'
+		STATICFILES_DIRS = [ os.path.join(BASE_DIR, "static"),   ]
+
+		MEDIA_URL = 'media/'
+
+
+	2.  in app's urls.py file :
+		
+	from django.conf import settings
+	from django.conf.urls.static import static
+
+	urlpatterns =static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT )+
+
+	in html  body  :
+		{% load static %}
+
+	for images                        :        img src="{% static   'images/image_name '  %}"  
+	background-image  :         url({% static    'images/image_name '  %});
+	for css                             :
+     	for  js                              :
+
+
+             
+                                                                                                                 TOPIC TRIKS
+
+
+1. for data save create a function like
+
+def save(req):
+    data=models_name()
+    data.name=req.POST['name']
+    data.city=req.POST['city']
+    data.email=req.POST['email']
+    data.phone=req.POST['phone']
+    data.save()
+    return HttpResponse("data saved")
+
+2. For data fetch      (  in table format  )
+
+{% for x in myrecord%}
+      <tr>
+        <td scope="row">{{x.id}}</th>
+        <td>{{x.name}}</td>
+        <td>{{x.city}}</td>
+        <td>{{x.email}}</td>
+        <td>{{x.phone}}</td>
+        <td><a href="update{{x.id}}" class="btn" style=" background-color: yellow; color:black;">Update</a></td>
+        <td><a href="delete{{x.id}}" class="btn btn-danger">Delete</a></td>
+      </tr>
+      {% endfor %}
+
+3. for data view write in the  function   (   of  page )  
+  data=name_of_models.objects.all()
+    return render(req,"home.html",{"myrecord":data})
+
+4.  access  :
+           req.GET.get ( '_name '  , ' default _value '   ) 
+
